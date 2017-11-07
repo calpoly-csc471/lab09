@@ -1,11 +1,9 @@
 /*
 Base code
-Currently will make 2 FBOs and textures (only uses one in base code)
-and writes out frame as a .png (Texture_output.png)
-
-Winter 2017 - ZJW (Piddington texture write)
-2017 integration with pitch and yaw camera lab (set up for texture mapping lab)
-*/
+Draws two meshes and one ground plane, one mesh has textures, as well
+as ground plane.
+Must be fixed to load in mesh with multiple shapes (dummy.obj)
+ */
 
 #include <iostream>
 #include <glad/glad.h>
