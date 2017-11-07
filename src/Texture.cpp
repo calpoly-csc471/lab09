@@ -33,25 +33,25 @@ void Texture::init()
 	height = h;
 
 	// Generate a texture buffer object
-	glGenTextures(1, &tid);
+	CHECKED_GL_CALL(glGenTextures(1, &tid));
 	// Bind the current texture to be the newly generated texture object
-	glBindTexture(GL_TEXTURE_2D, tid);
+	CHECKED_GL_CALL(glBindTexture(GL_TEXTURE_2D, tid));
 
 	// Load the actual texture data
 	// Base level is 0, number of channels is 3, and border is 0.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	CHECKED_GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
 	// Generate image pyramid
-	glGenerateMipmap(GL_TEXTURE_2D);
+	CHECKED_GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 
 	// Set texture wrap modes for the S and T directions
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	CHECKED_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	CHECKED_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	// Set filtering mode for magnification and minimification
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	CHECKED_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	CHECKED_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 
 	// Unbind
-	glBindTexture(GL_TEXTURE_2D, 0);
+	CHECKED_GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 	// Free image, since the data is now on the GPU
 	stbi_image_free(data);
 }
@@ -59,20 +59,20 @@ void Texture::init()
 void Texture::setWrapModes(GLint wrapS, GLint wrapT)
 {
 	// Must be called after init()
-	glBindTexture(GL_TEXTURE_2D, tid);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+	CHECKED_GL_CALL(glBindTexture(GL_TEXTURE_2D, tid));
+	CHECKED_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS));
+	CHECKED_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT));
 }
 
 void Texture::bind(GLint handle)
 {
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, tid);
-	glUniform1i(handle, unit);
+	CHECKED_GL_CALL(glActiveTexture(GL_TEXTURE0 + unit));
+	CHECKED_GL_CALL(glBindTexture(GL_TEXTURE_2D, tid));
+	CHECKED_GL_CALL(glUniform1i(handle, unit));
 }
 
 void Texture::unbind()
 {
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	CHECKED_GL_CALL(glActiveTexture(GL_TEXTURE0 + unit));
+	CHECKED_GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
