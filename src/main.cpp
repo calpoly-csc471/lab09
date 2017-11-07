@@ -37,7 +37,7 @@ public:
 	std::vector<shared_ptr<Shape>> AllShapes;
 	//meshes with just one shape
    shared_ptr<Shape> world;
-   shared_ptr<Shape> Nef;	
+   shared_ptr<Shape> Nef;
 
 	//ground plane info
    GLuint GrndBuffObj, GrndNorBuffObj, GrndTexBuffObj, GIndxBuffObj;
@@ -66,7 +66,7 @@ public:
 	vec3 gTrans = vec3(0);
 	float gScale = 1.0;
 
-	//transforms for the world	
+	//transforms for the world
 	vec3 gDTrans = vec3(0);
 	float gDScale = 1.0;
 
@@ -133,7 +133,7 @@ public:
    	texture1->init();
    	texture1->setUnit(1);
    	texture1->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
-   
+
       texture2 = make_shared<Texture>();
    	texture2->setFilename(resourceDirectory + "/grass.jpg");
    	texture2->init();
@@ -204,7 +204,7 @@ public:
       vector<tinyobj::material_t> objMaterials;
       string errStr;
       //load in the mesh and make the shapes
-      bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
+      bool rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr,
 						(resourceDirectory + "/dummy.obj").c_str());
       if(!rc) {
         cerr << errStr << endl;
@@ -224,19 +224,19 @@ public:
          }
 
          //think about scale and translate....
-			//based on the results of calling measure on each peice       
+			//based on the results of calling measure on each peice
        }
-     
-		//now read in the sphere for the world 
-		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
+
+		//now read in the sphere for the world
+		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr,
 						(resourceDirectory + "/sphere.obj").c_str());
 
 		world =  make_shared<Shape>();
 		world->createShape(TOshapes[0]);
 		world->measure();
 		world->init();
-     
-		//compute its transforms based on measuring it 
+
+		//compute its transforms based on measuring it
 		gDTrans = world->min + 0.5f*(world->max - world->min);
 		if (world->max.x >world->max.y && world->max.x > world->max.z)
 			gDScale = 2.0/(world->max.x-world->min.x);
@@ -244,17 +244,17 @@ public:
 			gDScale = 2.0/(world->max.y-world->min.y);
 		else
 			gDScale = 2.0/(world->max.z-world->min.z);
-	
-		//now read in the Nefertiti model	
-		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
+
+		//now read in the Nefertiti model
+		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr,
 						(resourceDirectory + "/Nefertiti-100K.obj").c_str());
 
 		Nef =  make_shared<Shape>();
 		Nef->createShape(TOshapes[0]);
 		Nef->measure();
 		Nef->init();
-      
-		//compute its transforms based on measuring it 
+
+		//compute its transforms based on measuring it
 		gTrans = Nef->min + 0.5f*(Nef->max - Nef->min);
 		if (Nef->max.x > Nef->max.y && Nef->max.x > Nef->max.z)
 			gScale = 2.0/(Nef->max.x-Nef->min.x);
@@ -310,7 +310,7 @@ public:
     glGenBuffers(1, &GrndNorBuffObj);
     glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
 	 glBufferData(GL_ARRAY_BUFFER, sizeof(GrndNorm), GrndNorm, GL_STATIC_DRAW);
-    
+
     glGenBuffers(1, &GrndTexBuffObj);
     glBindBuffer(GL_ARRAY_BUFFER, GrndTexBuffObj);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
@@ -329,7 +329,7 @@ public:
    glEnableVertexAttribArray(1);
    glBindBuffer(GL_ARRAY_BUFFER, GrndNorBuffObj);
    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-         
+
    glEnableVertexAttribArray(2);
    glBindBuffer(GL_ARRAY_BUFFER, GrndTexBuffObj);
    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
@@ -384,33 +384,33 @@ public:
 			glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
 			 Nef->draw(prog);
 		    MV->popMatrix();
-	
+
 			//TODO add code for the transforms for the dummy and loop over
-			//all the shapes in the dummy to draw it	
-	
+			//all the shapes in the dummy to draw it
+
 		MV->popMatrix();
 		prog->unbind();
-		
+
 		texProg->bind();
 		glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 
 		MV->pushMatrix();
 			MV->loadIdentity();
 			MV->rotate(radians(cTheta), vec3(0, 1, 0));
-		
+
 			/* draw right mesh */
 			MV->pushMatrix();
 			MV->translate(vec3(2, 0.f, -5));
 			MV->scale(gDScale);
 			MV->translate(-1.0f*gDTrans);
 			glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
-			texture1->bind(texProg->getUniform("Texture0"));	
+			texture1->bind(texProg->getUniform("Texture0"));
 			world->draw(texProg);
 		   MV->popMatrix();
 
 			/*draw the ground */
 			glUniformMatrix4fv(texProg->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
-			texture2->bind(texProg->getUniform("Texture0"));	
+			texture2->bind(texProg->getUniform("Texture0"));
 			renderGround();
 		MV->popMatrix();
 		P->popMatrix();
