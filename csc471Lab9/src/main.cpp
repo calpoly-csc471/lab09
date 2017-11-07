@@ -35,6 +35,8 @@ public:
 
 	// Shape to be used (from obj file)
 	std::vector<shared_ptr<Shape>> AllShapes;
+   shared_ptr<Shape> world;
+   shared_ptr<Shape> Nef;	
 
 	//ground plane info
    GLuint GrndBuffObj, GrndNorBuffObj, GrndTexBuffObj, GIndxBuffObj;
@@ -222,12 +224,12 @@ public:
 		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
 						(resourceDirectory + "/sphere.obj").c_str());
 
-		shared_ptr<Shape> world =  make_shared<Shape>();
+		world =  make_shared<Shape>();
 		world->createShape(TOshapes[0]);
 		world->measure();
 		world->init();
-		AllShapes.push_back(world);
-      gDTrans = world->min + 0.5f*(world->max - world->min);
+      
+		gDTrans = world->min + 0.5f*(world->max - world->min);
 		if (world->max.x >world->max.y && world->max.x > world->max.z)
 			gDScale = 2.0/(world->max.x-world->min.x);
 		else if (world->max.y > world->max.x && world->max.y > world->max.z)
@@ -238,18 +240,18 @@ public:
 		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
 						(resourceDirectory + "/Nefertiti-100K.obj").c_str());
 
-		shared_ptr<Shape> s =  make_shared<Shape>();
-		s->createShape(TOshapes[0]);
-		s->measure();
-		s->init();
-		AllShapes.push_back(s);
-      gTrans = s->min + 0.5f*(s->max - s->min);
-		if (s->max.x > s->max.y && s->max.x > s->max.z)
-			gScale = 2.0/(s->max.x-s->min.x);
-		else if (s->max.y > s->max.x && s->max.y > s->max.z)
-			gScale = 2.0/(s->max.y-s->min.y);
+		Nef =  make_shared<Shape>();
+		Nef->createShape(TOshapes[0]);
+		Nef->measure();
+		Nef->init();
+      
+		gTrans = Nef->min + 0.5f*(Nef->max - Nef->min);
+		if (Nef->max.x > Nef->max.y && Nef->max.x > Nef->max.z)
+			gScale = 2.0/(Nef->max.x-Nef->min.x);
+		else if (Nef->max.y > Nef->max.x && Nef->max.y > Nef->max.z)
+			gScale = 2.0/(Nef->max.y-Nef->min.y);
 		else
-			gScale = 2.0/(s->max.z-s->min.z);
+			gScale = 2.0/(Nef->max.z-Nef->min.z);
 
 		//Initialize the geometry to render a ground plane
 		initQuad();
@@ -370,10 +372,11 @@ public:
 			MV->translate(-1.0f*gTrans);
 			SetMaterial(2);
 			glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
-			 //Nef is second - loop with multiple shapes
-			 AllShapes[1]->draw(prog);
+			 Nef->draw(prog);
 		    MV->popMatrix();
-		
+	
+			//TODO add code for the transforms for the dummy and loop over
+			//all the shapes in the dummy to draw it	
 	
 		MV->popMatrix();
 		prog->unbind();
@@ -392,8 +395,7 @@ public:
 			MV->translate(-1.0f*gDTrans);
 			glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
 			texture1->bind(texProg->getUniform("Texture0"));	
-			//world is first
-			AllShapes[0]->draw(texProg);
+			world->draw(texProg);
 		   MV->popMatrix();
 
 			/*draw the ground */

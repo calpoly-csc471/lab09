@@ -6,21 +6,21 @@ layout(location = 2) in vec2 vertTex;
 uniform mat4 P;
 uniform mat4 MV;
 
-out vec3 vColor;
+out float dCo;
 out vec2 vTexCoord;
 out vec3 fragNor;
 
 void main() {
 
-	vec3 lightDir = vec3(1, 1, 1);
+  vec3 lightDir = vec3(1, 1, 1);
   vec4 vPosition;
 
   /* First model transforms */
   gl_Position = P * MV * vec4(vertPos.xyz, 1.0);
 
   fragNor = (MV * vec4(vertNor, 0.0)).xyz;
-  /* a color that could be blended - or be shading */
-  vColor = vec3(max(dot(fragNor, normalize(lightDir)), 0));
+  /* diffuse coefficient for a directional light */
+  dCo = max(dot(fragNor, normalize(lightDir)), 0);
   /* pass through the texture coordinates to be interpolated */
   vTexCoord = vertTex;
 }
