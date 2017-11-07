@@ -1,7 +1,7 @@
 
 #include "Shape.h"
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 
 #include "GLSL.h"
 #include "Program.h"
@@ -23,8 +23,8 @@ void Shape::measure()
 	float minX, minY, minZ;
 	float maxX, maxY, maxZ;
 
-	minX = minY = minZ = 1.1754E+38F;
-	maxX = maxY = maxZ = -1.1754E+38F;
+	minX = minY = minZ = std::numeric_limits<float>::max();
+	maxX = maxY = maxZ = -std::numeric_limits<float>::max();
 
 	//Go through all vertices to determine min and max of each dimension
 	for (size_t v = 0; v < posBuf.size() / 3; v++)

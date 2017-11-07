@@ -218,8 +218,8 @@ public:
 		{
 			// some data to keep track of where our mesh is in space
 			vec3 Gmin, Gmax;
-			Gmin = vec3(1.1754E+38F);
-			Gmax = vec3(-1.1754E+38F);
+			Gmin = vec3(std::numeric_limits<float>::max());
+			Gmax = vec3(-std::numeric_limits<float>::max());
 			for (size_t i = 0; i < TOshapes.size(); i++)
 			{
 				// TODO -- Initialize each mesh
