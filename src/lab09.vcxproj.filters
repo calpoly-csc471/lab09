@@ -12,6 +12,9 @@
     <ClCompile Include="MatrixStack.cpp" />
     <ClCompile Include="GLTextureWriter.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="tiny_obj_loader.cpp">
+      <Filter>ext</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Program.h" />
