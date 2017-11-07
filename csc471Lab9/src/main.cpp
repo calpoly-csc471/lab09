@@ -33,8 +33,9 @@ public:
 	std::shared_ptr<Program> prog;
 	std::shared_ptr<Program> texProg;
 
-	// Shape to be used (from obj file)
+	// Shapes to be used (from obj file)
 	std::vector<shared_ptr<Shape>> AllShapes;
+	//meshes with just one shape
    shared_ptr<Shape> world;
    shared_ptr<Shape> Nef;	
 
@@ -52,17 +53,20 @@ public:
 	GLuint quad_VertexArrayID;
 	GLuint quad_vertexbuffer;
 
-	//reference to texture FBO
-	GLuint texBuf[2];
+	//three different textures
 	shared_ptr<Texture> texture0;
  	shared_ptr<Texture> texture1;
  	shared_ptr<Texture> texture2;
 
-	bool FirstTime = true;
 	int gMat = 0;
+
+	//For each shape, now that they are not resized, they need to be
+	//transformed appropriately to the origin and scaled
+	//transforms for Nef
 	vec3 gTrans = vec3(0);
 	float gScale = 1.0;
-	
+
+	//transforms for the world	
 	vec3 gDTrans = vec3(0);
 	float gDScale = 1.0;
 
@@ -116,6 +120,7 @@ public:
 		glViewport(0, 0, width, height);
 	}
 
+  //Code to load in the three textures
 	void initTex(const std::string& resourceDirectory) {
     	texture0 = make_shared<Texture>();
    	texture0->setFilename(resourceDirectory + "/crate.jpg");
@@ -136,6 +141,7 @@ public:
    	texture2->setWrapModes(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 	}
 
+	//code to set up the two shaders - a diffuse shader and texture mapping
 	void init(const std::string& resourceDirectory)
 	{
 		int width, height;
@@ -220,7 +226,8 @@ public:
          //think about scale and translate....
 			//based on the results of calling measure on each peice       
        }
-      
+     
+		//now read in the sphere for the world 
 		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
 						(resourceDirectory + "/sphere.obj").c_str());
 
@@ -228,7 +235,8 @@ public:
 		world->createShape(TOshapes[0]);
 		world->measure();
 		world->init();
-      
+     
+		//compute its transforms based on measuring it 
 		gDTrans = world->min + 0.5f*(world->max - world->min);
 		if (world->max.x >world->max.y && world->max.x > world->max.z)
 			gDScale = 2.0/(world->max.x-world->min.x);
@@ -236,7 +244,8 @@ public:
 			gDScale = 2.0/(world->max.y-world->min.y);
 		else
 			gDScale = 2.0/(world->max.z-world->min.z);
-		
+	
+		//now read in the Nefertiti model	
 		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr, 
 						(resourceDirectory + "/Nefertiti-100K.obj").c_str());
 
@@ -245,6 +254,7 @@ public:
 		Nef->measure();
 		Nef->init();
       
+		//compute its transforms based on measuring it 
 		gTrans = Nef->min + 0.5f*(Nef->max - Nef->min);
 		if (Nef->max.x > Nef->max.y && Nef->max.x > Nef->max.z)
 			gScale = 2.0/(Nef->max.x-Nef->min.x);
@@ -262,7 +272,7 @@ public:
 		float g_groundSize = 20;
    	float g_groundY = -1.5;
 
-  // A x-z plane at y = g_groundY of dim[-g_groundSize, g_groundSize]^2
+    // A x-z plane at y = g_groundY of dim[-g_groundSize, g_groundSize]^2
     float GrndPos[] = {
     -g_groundSize, g_groundY, -g_groundSize,
     -g_groundSize, g_groundY,  g_groundSize,
@@ -355,11 +365,11 @@ public:
 		P->pushMatrix();
 		P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
-		//Draw our scene - two meshes - right now to a texture
+		//Draw our scene - two meshes and ground plane
 		prog->bind();
 		glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
 
-		// globle transforms for 'camera' (you will fix this now!)
+		// globle transforms for 'camera' (you will likely wantt to fix this)
 		MV->pushMatrix();
 			MV->loadIdentity();
 			MV->rotate(radians(cTheta), vec3(0, 1, 0));
