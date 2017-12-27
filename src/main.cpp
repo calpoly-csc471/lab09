@@ -253,15 +253,15 @@ public:
 		gDTrans = world->min + 0.5f*(world->max - world->min);
 		if (world->max.x >world->max.y && world->max.x > world->max.z)
 		{
-			gDScale = 2.0/(world->max.x-world->min.x);
+			gDScale = 2.f / (world->max.x-world->min.x);
 		}
 		else if (world->max.y > world->max.x && world->max.y > world->max.z)
 		{
-			gDScale = 2.0/(world->max.y-world->min.y);
+			gDScale = 2.f / (world->max.y-world->min.y);
 		}
 		else
 		{
-			gDScale = 2.0/(world->max.z-world->min.z);
+			gDScale = 2.f / (world->max.z-world->min.z);
 		}
 
 		// now read in the Nefertiti model
@@ -277,15 +277,15 @@ public:
 		gTrans = Nef->min + 0.5f * (Nef->max - Nef->min);
 		if (Nef->max.x > Nef->max.y && Nef->max.x > Nef->max.z)
 		{
-			gScale = 2.0 / (Nef->max.x - Nef->min.x);
+			gScale = 2.f / (Nef->max.x - Nef->min.x);
 		}
 		else if (Nef->max.y > Nef->max.x && Nef->max.y > Nef->max.z)
 		{
-			gScale = 2.0 / (Nef->max.y - Nef->min.y);
+			gScale = 2.f / (Nef->max.y - Nef->min.y);
 		}
 		else
 		{
-			gScale = 2.0 / (Nef->max.z - Nef->min.z);
+			gScale = 2.f / (Nef->max.z - Nef->min.z);
 		}
 
 		// Initialize the geometry to render a ground plane
