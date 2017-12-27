@@ -266,7 +266,7 @@ public:
 
 		// now read in the Nefertiti model
 		rc = tinyobj::LoadObj(TOshapes, objMaterials, errStr,
-						(resourceDirectory + "/Nefertiti-100K.obj").c_str());
+						(resourceDirectory + "/Nefertiti-10K.obj").c_str());
 
 		Nef = make_shared<Shape>();
 		Nef->createShape(TOshapes[0]);
