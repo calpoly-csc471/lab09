@@ -23,10 +23,14 @@
     <ClInclude Include="Shape.h" />
     <ClInclude Include="MatrixStack.h" />
     <ClInclude Include="GLTextureWriter.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="..\ext\tiny_obj_loader\tiny_obj_loader.h">
+      <Filter>ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\stb\stb_image.h">
+      <Filter>ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\stb\stb_image_write.h">
       <Filter>ext</Filter>
     </ClInclude>
   </ItemGroup>
