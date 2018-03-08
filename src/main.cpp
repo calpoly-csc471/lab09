@@ -173,7 +173,8 @@ public:
 			exit(1);
 		}
 		prog->addUniform("P");
-		prog->addUniform("MV");
+		prog->addUniform("V");
+		prog->addUniform("M");
 		prog->addUniform("MatAmb");
 		prog->addUniform("MatDif");
 		prog->addAttribute("vertPos");
@@ -193,7 +194,8 @@ public:
 			exit(1);
 		}
  		texProg->addUniform("P");
-		texProg->addUniform("MV");
+		texProg->addUniform("V");
+		texProg->addUniform("M");
 		texProg->addAttribute("vertPos");
 		texProg->addAttribute("vertNor");
 		texProg->addAttribute("vertTex");
@@ -387,60 +389,65 @@ public:
 
 		// Create the matrix stacks
 		auto P = make_shared<MatrixStack>();
-		auto MV = make_shared<MatrixStack>();
+		auto V = make_shared<MatrixStack>();
+		auto M = make_shared<MatrixStack>();
 		// Apply perspective projection.
 		P->pushMatrix();
 		P->perspective(45.0f, aspect, 0.01f, 100.0f);
 
+		V->pushMatrix();
+		V->rotate(radians(cTheta), vec3(0, 1, 0));
+
 		//Draw our scene - two meshes and ground plane
 		prog->bind();
 		glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+		glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
 
 		// globle transforms for 'camera' (you will likely wantt to fix this)
-		MV->pushMatrix();
-			MV->loadIdentity();
-			MV->rotate(radians(cTheta), vec3(0, 1, 0));
+		M->pushMatrix();
+			M->loadIdentity();
 
 			/* draw left mesh */
-			MV->pushMatrix();
-			MV->translate(vec3(-2, 0.f, -5));
-			MV->rotate(radians(-90.f), vec3(1, 0, 0));
-			MV->scale(gScale);
-			MV->translate(-1.0f*gTrans);
+			M->pushMatrix();
+			M->translate(vec3(-2, 0.f, -5));
+			M->rotate(radians(-90.f), vec3(1, 0, 0));
+			M->scale(gScale);
+			M->translate(-1.0f*gTrans);
 			SetMaterial(2);
-			glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
+			glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE,value_ptr(M->topMatrix()) );
 			Nef->draw(prog);
-		MV->popMatrix();
+		M->popMatrix();
 
 		// TODO add code for the transforms for the dummy and loop over
 		// all the shapes in the dummy to draw it
 
-		MV->popMatrix();
+		M->popMatrix();
 		prog->unbind();
 
 		texProg->bind();
 		glUniformMatrix4fv(texProg->getUniform("P"), 1, GL_FALSE, value_ptr(P->topMatrix()));
+		glUniformMatrix4fv(texProg->getUniform("V"), 1, GL_FALSE, value_ptr(V->topMatrix()));
 
-		MV->pushMatrix();
-			MV->loadIdentity();
-			MV->rotate(radians(cTheta), vec3(0, 1, 0));
+		M->pushMatrix();
+			M->loadIdentity();
 
 			/* draw right mesh */
-			MV->pushMatrix();
-			MV->translate(vec3(2, 0.f, -5));
-			MV->scale(gDScale);
-			MV->translate(-1.0f*gDTrans);
-			glUniformMatrix4fv(prog->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
+			M->pushMatrix();
+			M->translate(vec3(2, 0.f, -5));
+			M->scale(gDScale);
+			M->translate(-1.0f*gDTrans);
+			glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE,value_ptr(M->topMatrix()) );
 			texture1->bind(texProg->getUniform("Texture0"));
 			world->draw(texProg);
-			MV->popMatrix();
+			M->popMatrix();
 
 			/*draw the ground */
-			glUniformMatrix4fv(texProg->getUniform("MV"), 1, GL_FALSE,value_ptr(MV->topMatrix()) );
+			glUniformMatrix4fv(texProg->getUniform("M"), 1, GL_FALSE,value_ptr(M->topMatrix()) );
 			texture2->bind(texProg->getUniform("Texture0"));
 			renderGround();
 
-		MV->popMatrix();
+		M->popMatrix();
+		V->popMatrix();
 		P->popMatrix();
 		texProg->unbind();
 	}

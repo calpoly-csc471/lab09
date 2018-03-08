@@ -1,4 +1,4 @@
-#version 330 core 
+#version 330 core
 in vec3 fragNor;
 in vec3 WPos;
 //to send the color to a frame buffer
@@ -11,7 +11,7 @@ uniform vec3 MatDif;
 void main()
 {
 	vec3 Dcolor, Scolor;
-   vec3 Dlight = vec3(1, 1, 1);
+	vec3 Dlight = vec3(1, 1, 1);
 	vec3 normal = normalize(fragNor);
 	Dcolor = MatDif*max(dot(normalize(Dlight), normal), 0)+MatAmb;
 	color = vec4(Dcolor, 1.0);
